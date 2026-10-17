@@ -3,12 +3,12 @@ import * as fs from 'fs/promises';
 import * as path from 'node:path';
 import { z } from 'zod';
 import { createTool } from '@mastra/core/tools';
-import { PinoLogger } from '@mastra/loggers';
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from '@mastra/core/logger';
+import { AISpanType } from '../config/tracing-shim';
 import * as zlib from 'zlib';
 import { pipeline } from 'stream/promises';
 
-const logger = new PinoLogger({ name: 'DataFileManager', level: 'info' });
+const logger = new ConsoleLogger({ name: 'DataFileManager', level: 'info' });
 
 const DATA_DIR = path.join(process.cwd(), './docs/data');
 
@@ -34,7 +34,8 @@ export const readDataFileTool = createTool({
         fileName: z.string().describe("The name of the file (relative to the data/ directory)."),
     }),
     outputSchema: z.string().describe("The content of the file as a string."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const readSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'read_data_file',
@@ -69,7 +70,8 @@ export const writeDataFileTool = createTool({
         content: z.string().describe("The content to write to the file."),
     }),
     outputSchema: z.string().describe("A confirmation string indicating success."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const writeSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'write_data_file',
@@ -109,7 +111,8 @@ export const deleteDataFileTool = createTool({
         fileName: z.string().describe("The name of the file (relative to the data/ directory)."),
     }),
     outputSchema: z.string().describe("A confirmation string indicating success."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const deleteSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'delete_data_file',
@@ -142,7 +145,8 @@ export const listDataDirTool = createTool({
         dirPath: z.string().optional().describe("The path within the data directory to list (e.g., '', 'subfolder/')."),
     }),
     outputSchema: z.array(z.string()).describe("An array of file and directory names."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const listSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'list_data_directory',
@@ -175,7 +179,8 @@ export const copyDataFileTool = createTool({
         destFile: z.string().describe("The destination file path (relative to the data/ directory)."),
     }),
     outputSchema: z.string().describe("A confirmation string indicating success."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const copySpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'copy_data_file',
@@ -212,7 +217,8 @@ export const moveDataFileTool = createTool({
         destFile: z.string().describe("The destination file path (relative to the data/ directory)."),
     }),
     outputSchema: z.string().describe("A confirmation string indicating success."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const moveSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'move_data_file',
@@ -250,7 +256,8 @@ export const searchDataFilesTool = createTool({
         dirPath: z.string().optional().describe("The directory to search in (relative to data/, default: '')."),
     }),
     outputSchema: z.array(z.string()).describe("An array of matching file paths."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const searchSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'search_data_files',
@@ -320,7 +327,8 @@ export const getDataFileInfoTool = createTool({
         isFile: z.boolean(),
         isDirectory: z.boolean(),
     }).describe("File metadata information."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const infoSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'get_data_file_info',
@@ -361,7 +369,8 @@ export const createDataDirTool = createTool({
         dirPath: z.string().describe("The path of the directory to create (relative to the data/ directory)."),
     }),
     outputSchema: z.string().describe("A confirmation string indicating success."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const createDirSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'create_data_directory',
@@ -393,7 +402,8 @@ export const removeDataDirTool = createTool({
         dirPath: z.string().describe("The path of the directory to remove (relative to the data/ directory)."),
     }),
     outputSchema: z.string().describe("A confirmation string indicating success."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const removeDirSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'remove_data_directory',
@@ -431,7 +441,8 @@ export const archiveDataTool = createTool({
         archiveName: z.string().describe("The name of the archive file (relative to the data/ directory, without extension)."),
     }),
     outputSchema: z.string().describe("A confirmation string indicating success."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const archiveSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'archive_data',
@@ -473,7 +484,8 @@ export const backupDataTool = createTool({
         backupDir: z.string().optional().describe("The backup directory (relative to data/, default: 'backups/')."),
     }),
     outputSchema: z.string().describe("A confirmation string indicating success with backup path."),
-    execute: async ({ context, tracingContext }) => {
+    execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
         const backupSpan = tracingContext?.currentSpan?.createChildSpan({
             type: AISpanType.GENERIC,
             name: 'backup_data',

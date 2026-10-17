@@ -10,7 +10,8 @@ export const copywriterTool = createTool({
   outputSchema: z.object({
     copy: z.string()
   }),
-  execute: async ({ context, mastra }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const mastra = (__ctx as any)?.mastra;
     const { topic } = context;
 
     const agent = mastra!.getAgent("copywriterAgent");

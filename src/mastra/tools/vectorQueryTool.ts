@@ -23,8 +23,8 @@
 import { createVectorQueryTool } from "@mastra/rag";
 import { createTool } from '@mastra/core/tools';
 import type { ToolExecutionContext } from '@mastra/core/tools';
-import { RuntimeContext } from '@mastra/core/di';
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { RequestContext as RuntimeContext } from '@mastra/core/di';
+import { AISpanType } from '../config/tracing-shim';
 import { z } from 'zod';
 import {
   createLibSQLVectorStore,
@@ -32,7 +32,7 @@ import {
   searchMemoryMessages // Import searchMemoryMessages
 } from '../config/libsql-storage';
 
-import { PinoLogger } from '@mastra/loggers';
+import { ConsoleLogger } from '@mastra/core/logger';
 import { embedMany, generateId } from 'ai';
 import type { Memory } from '@mastra/memory';
 import { google } from "@ai-sdk/google";
@@ -49,7 +49,7 @@ export interface VectorQueryRuntimeContext {
   'include-metadata'?: boolean;
 };
 
-const logger = new PinoLogger({ name: 'VectorQueryTool', level: 'info' });
+const logger = new ConsoleLogger({ name: 'VectorQueryTool', level: 'info' });
 const vectorQueryInputSchema = z.object({
   query: z.string().min(1).describe('The query to search for in the vector store'),
   threadId: z.string().optional().describe('Optional thread ID to search within a specific conversation thread'),

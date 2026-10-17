@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from '@mastra/loggers';
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from '@mastra/core/logger';
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ name: 'GitHubGists', level: 'info' });
+const logger = new ConsoleLogger({ name: 'GitHubGists', level: 'info' });
 
 const listGistsOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -30,7 +30,8 @@ export const listGists = createTool({
     username: z.string().optional(),
   }),
   outputSchema: listGistsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Listing gists for user: ${context.username ?? 'current user'}`);
 
     const listSpan = tracingContext?.currentSpan?.createChildSpan({
@@ -80,7 +81,8 @@ export const getGist = createTool({
     gist_id: z.string(),
   }),
   outputSchema: getGistOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Getting gist: ${context.gist_id}`);
 
     const getSpan = tracingContext?.currentSpan?.createChildSpan({
@@ -137,7 +139,8 @@ export const createGist = createTool({
     public: z.boolean().optional(),
   }),
   outputSchema: createGistOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Creating gist with ${Object.keys(context.files).length} files`);
 
     const createSpan = tracingContext?.currentSpan?.createChildSpan({
@@ -193,7 +196,8 @@ export const updateGist = createTool({
     description: z.string().optional(),
   }),
   outputSchema: updateGistOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Updating gist: ${context.gist_id}`);
 
     const updateSpan = tracingContext?.currentSpan?.createChildSpan({
@@ -229,7 +233,8 @@ export const deleteGist = createTool({
     gist_id: z.string(),
   }),
   outputSchema: deleteGistOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Deleting gist: ${context.gist_id}`);
 
     const deleteSpan = tracingContext?.currentSpan?.createChildSpan({

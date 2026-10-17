@@ -1,4 +1,4 @@
-import { PinoLogger } from '@mastra/loggers';
+import { ConsoleLogger } from '@mastra/core/logger';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
@@ -11,7 +11,7 @@ if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, { recursive: true });
 }
 
-export const logger: PinoLogger = new PinoLogger({
+export const logger: ConsoleLogger = new ConsoleLogger({
   name: 'workflow-logger',
   level: 'info',
 });

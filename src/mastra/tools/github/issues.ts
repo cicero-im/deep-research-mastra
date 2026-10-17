@@ -1,8 +1,8 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
 const UserSchema = z.object({
   login: z.string(),
@@ -41,7 +41,7 @@ const CommentSchema = z.object({
   issue_url: z.string().url()
 });
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 const createIssueOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -68,7 +68,8 @@ export const createIssue = createTool({
     body: z.string(),
   }),
   outputSchema: createIssueOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_issue',
@@ -122,7 +123,8 @@ export const getIssue = createTool({
     issue_number: z.number(),
   }),
   outputSchema: getIssueOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_issue',
@@ -179,7 +181,8 @@ export const updateIssue = createTool({
     state: z.enum(['open', 'closed']).optional(),
   }),
   outputSchema: updateIssueOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_issue',
@@ -233,7 +236,8 @@ export const listIssues = createTool({
     state: z.enum(['open', 'closed', 'all']).optional(),
   }),
   outputSchema: listIssuesOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_issues',
@@ -287,7 +291,8 @@ export const closeIssue = createTool({
     issue_number: z.number(),
   }),
   outputSchema: closeIssueOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'close_issue',
@@ -334,7 +339,8 @@ export const listComments = createTool({
     issue_number: z.number(),
   }),
   outputSchema: listCommentsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_comments',
@@ -383,7 +389,8 @@ export const createComment = createTool({
     body: z.string(),
   }),
   outputSchema: createCommentOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_comment',

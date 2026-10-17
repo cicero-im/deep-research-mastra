@@ -20,9 +20,9 @@ import {
   webScraperTool,
   webSearchTool,
 } from '../tools/index';
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
  // #region Tool and Agent Configuration
  interface McpTool {

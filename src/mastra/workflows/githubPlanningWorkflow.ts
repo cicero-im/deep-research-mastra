@@ -3,9 +3,9 @@ import { planningAgent } from '../agents/planningAgent';
 import { monitorAgent } from '../agents/monitorAgent';
 import { githubAgent } from '../agents/githubAgent';
 import { z } from 'zod';
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 // Step 1: Get project details
 const getProjectDetailsStep = createStep({

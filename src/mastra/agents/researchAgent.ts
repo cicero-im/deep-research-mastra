@@ -4,18 +4,18 @@ import { extractLearningsTool } from '../tools/extractLearningsTool';
 import { webSearchTool } from '../tools/webSearchTool';
 //import { createGemini25Provider } from '../config/googleProvider';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
 import { google } from '@ai-sdk/google';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing Research Agent...");
 
 const memory = createResearchMemory();
 
 export const researchAgent = new Agent({
+  id: 'research-agent',
   name: 'Research Agent',
   description: 'An expert research agent that conducts thorough research using web search and analysis tools.',
   instructions: `You are an expert research agent. Your goal is to research topics thoroughly by following this EXACT process:
@@ -51,15 +51,7 @@ export const researchAgent = new Agent({
   - Always complete the research process even if some searches fail
 
   Use all the tools available to you systematically and stop after the follow-up phase.
-  `,
- evals: {
-   contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-   completeness: new CompletenessMetric(),
-   textualDifference: new TextualDifferenceMetric(),
-   keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-   toneConsistency: new ToneConsistencyMetric(),
- },
- model: google('gemini-2.5-flash-lite'),
+  `, model: google('gemini-2.5-flash-lite'),
  tools: {
    webSearchTool,
    evaluateResultTool,

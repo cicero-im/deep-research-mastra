@@ -25,9 +25,9 @@ interface Message {
 }
 
 import { generateId } from 'ai';
-import { PinoLogger } from '@mastra/loggers';
-import { RuntimeContext } from "@mastra/core/runtime-context";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from '@mastra/core/logger';
+import { RequestContext as RuntimeContext } from "@mastra/core/request-context";
+import { AISpanType } from '../config/tracing-shim';
 
 import type {
   TracingSpanInput,
@@ -49,7 +49,7 @@ import { chunkerTool } from './chunker-tool';
 import type { Memory } from '@mastra/memory';
 import { google } from '@ai-sdk/google';
 
-const logger = new PinoLogger({ name: 'GraphRAGTool' });
+const logger = new ConsoleLogger({ name: 'GraphRAGTool' });
 
 /**
  * Zod schemas for GraphRAG tool validation

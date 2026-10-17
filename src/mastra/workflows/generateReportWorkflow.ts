@@ -1,9 +1,9 @@
 import { createStep, createWorkflow } from '@mastra/core/workflows';
 import { researchWorkflow } from './researchWorkflow';
 import { z } from 'zod';
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 // Map research output to report input and handle conditional logic
 const processResearchResultStep = createStep({

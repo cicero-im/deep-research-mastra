@@ -1,8 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { createResearchMemory } from '../config/libsql-storage';
-import { PinoLogger } from "@mastra/loggers";
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
+import { ConsoleLogger } from "@mastra/core/logger";
 import { UnicodeNormalizer } from "@mastra/core/processors"
 import { BatchPartsProcessor } from "@mastra/core/processors";
 //import { vectorQueryTool } from '../tools/vectorQueryTool';
@@ -22,7 +21,7 @@ import { webScraperTool,
 } from "../tools/web-scraper-tool";
 //import { webSearchTool } from '../tools/webSearchTool';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info('Initializing OpenRouter Assistant Agent...');
 
@@ -33,6 +32,7 @@ const openrouter = createOpenRouter({
 })
 
 export const assistant = new Agent({
+    id: 'assistant',
     name: "assistant",
     description: 'A helpful assistant.',
     instructions: "You are a helpful assistant.",
@@ -44,15 +44,7 @@ export const assistant = new Agent({
             },
         }
     }),
-    memory,
-    evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-    },
-    tools: { // Corrected indentation for the 'tools' object
+    memory,    tools: { // Corrected indentation for the 'tools' object
     readDataFileTool,
     writeDataFileTool,
     deleteDataFileTool,

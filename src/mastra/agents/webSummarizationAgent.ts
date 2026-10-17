@@ -1,16 +1,16 @@
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing Web Summarization Agent...");
 
 const memory = createResearchMemory();
 
 export const webSummarizationAgent = new Agent({
+  id: 'web-content-summarization-agent',
   name: 'Web Content Summarization Agent',
   description: 'An agent that summarizes web content from search results to prevent token limit issues',
   instructions: `
@@ -87,15 +87,7 @@ Format your summaries with:
 - Conciseness: Maximum information in minimum words
 
 Always provide summaries that capture the core value of the web content without losing critical details.
-  `,
-  evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-    },
-  model: google('gemini-2.5-flash-lite'),
+  `,  model: google('gemini-2.5-flash-lite'),
   memory,
 });
 

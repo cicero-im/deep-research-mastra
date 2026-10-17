@@ -20,9 +20,9 @@ import { createTool } from '@mastra/core/tools';
 import { MDocument } from '@mastra/rag';
 import { z } from 'zod';
 import { generateId } from 'ai';
-import { PinoLogger } from '@mastra/loggers';
-import { RuntimeContext } from '@mastra/core/runtime-context';
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from '@mastra/core/logger';
+import { RequestContext as RuntimeContext } from '@mastra/core/request-context';
+import { AISpanType } from '../config/tracing-shim';
 import {
   upsertVectors,
   extractChunkMetadata,
@@ -32,7 +32,7 @@ import {
 import { embedMany } from 'ai';
 import { google } from '@ai-sdk/google';
 
-const logger = new PinoLogger({ name: 'ChunkerTool', level: 'info' });
+const logger = new ConsoleLogger({ name: 'ChunkerTool', level: 'info' });
 
 /**
  * Comprehensive Zod schemas for document chunking validation
@@ -208,7 +208,9 @@ export const chunkerTool = createTool({
   description: 'Advanced document chunking tool supporting multiple formats (text, HTML, Markdown, JSON, LaTeX, CSV, XML) with configurable strategies and runtime context integration',
   inputSchema: chunkerInputSchema,
   outputSchema: chunkerOutputSchema,
-  execute: async ({ context, runtimeContext, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const runtimeContext = (__ctx as any)?.runtimeContext;
+  const tracingContext = (__ctx as any)?.tracingContext;
     const startTime = Date.now();
 
     try {

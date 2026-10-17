@@ -2,9 +2,9 @@ import { createStep, createWorkflow } from '@mastra/core/workflows';
 import { githubPlanningWorkflow } from './githubPlanningWorkflow';
 import { qualityAssuranceAgent } from '../agents/qualityAssuranceAgent';
 import { z } from 'zod';
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 // Process planning results for QA
 const processPlanningResultsStep = createStep({

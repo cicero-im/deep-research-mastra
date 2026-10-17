@@ -1,16 +1,16 @@
 import { createTool } from '@mastra/core/tools';
 import type { ToolExecutionContext } from '@mastra/core/tools';
-import { RuntimeContext } from '@mastra/core/di';
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { RequestContext as RuntimeContext } from '@mastra/core/di';
+import { AISpanType } from '../config/tracing-shim';
 import { rerank, type RerankResult } from '@mastra/rag';
 
 import { vectorQueryTool } from './vectorQueryTool';
-import { PinoLogger } from '@mastra/loggers';
+import { ConsoleLogger } from '@mastra/core/logger';
 import { z } from 'zod';
 import { STORAGE_CONFIG } from '../config/libsql-storage';
 import { google } from '@ai-sdk/google';
 
-const logger = new PinoLogger({ name: 'RerankTool', level: 'info' });
+const logger = new ConsoleLogger({ name: 'RerankTool', level: 'info' });
 
 /**
  * Runtime context type for rerank tool configuration

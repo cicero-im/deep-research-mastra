@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 const getCommitOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -40,7 +40,8 @@ export const getCommit = createTool({
     commit_sha: z.string(),
   }),
   outputSchema: getCommitOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_commit',
@@ -115,7 +116,8 @@ export const createCommit = createTool({
     }).optional(),
   }),
   outputSchema: createCommitOutputSchema,
-  execute: async ({ context }) => {
+  execute: async (context: any, __ctx?: any) => {
+
     try {
       const commit = await octokit.git.createCommit(context);
       logger.info('Commit created successfully');
@@ -155,7 +157,8 @@ export const getTree = createTool({
     recursive: z.union([z.boolean(), z.string()]).optional(),
   }),
   outputSchema: getTreeOutputSchema,
-  execute: async ({ context }) => {
+  execute: async (context: any, __ctx?: any) => {
+
     try {
       // Octokit expects the 'recursive' query param as a string (e.g. "1"), so coerce boolean input to string.
       const params = {
@@ -201,7 +204,8 @@ export const createTree = createTool({
     base_tree: z.string().optional(),
   }),
   outputSchema: createTreeOutputSchema,
-  execute: async ({ context }) => {
+  execute: async (context: any, __ctx?: any) => {
+
     try {
       const tree = await octokit.git.createTree(context);
       logger.info('Tree created successfully');
@@ -235,7 +239,8 @@ export const getBlob = createTool({
     file_sha: z.string(),
   }),
   outputSchema: getBlobOutputSchema,
-  execute: async ({ context }) => {
+  execute: async (context: any, __ctx?: any) => {
+
     try {
       const blob = await octokit.git.getBlob(context);
       logger.info('Blob retrieved successfully');
@@ -270,7 +275,8 @@ export const createBlob = createTool({
     encoding: z.enum(['utf-8', 'base64']).optional(),
   }),
   outputSchema: createBlobOutputSchema,
-  execute: async ({ context }) => {
+  execute: async (context: any, __ctx?: any) => {
+
     try {
       const blob = await octokit.git.createBlob(context);
       logger.info('Blob created successfully');
@@ -305,7 +311,8 @@ export const getRef = createTool({
     ref: z.string(),
   }),
   outputSchema: getRefOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_ref',
@@ -358,7 +365,8 @@ export const createRef = createTool({
     sha: z.string(),
   }),
   outputSchema: createRefOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_ref',
@@ -412,7 +420,8 @@ export const updateRef = createTool({
     force: z.boolean().optional(),
   }),
   outputSchema: updateRefOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_ref',
@@ -457,7 +466,8 @@ export const deleteRef = createTool({
     ref: z.string(),
   }),
   outputSchema: deleteRefOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'delete_ref',

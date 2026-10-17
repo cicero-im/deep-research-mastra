@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 const listWorkflowRunsOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -747,7 +747,8 @@ export const getWorkflowRun = createTool({
     run_id: z.number(),
   }),
   outputSchema: getWorkflowRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_workflow_run',
@@ -792,7 +793,8 @@ export const cancelWorkflowRun = createTool({
     run_id: z.number(),
   }),
   outputSchema: cancelWorkflowRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'cancel_workflow_run',
@@ -1169,7 +1171,8 @@ export const rerunWorkflowRun = createTool({
     run_id: z.number(),
   }),
   outputSchema: rerunWorkflowRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'rerun_workflow_run',
@@ -1219,7 +1222,8 @@ export const listJobsForWorkflowRun = createTool({
     run_id: z.number(),
   }),
   outputSchema: listJobsForWorkflowRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_jobs_for_workflow_run',
@@ -1269,7 +1273,8 @@ export const getJobForWorkflowRun = createTool({
     job_id: z.number(),
   }),
   outputSchema: getJobForWorkflowRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_job_for_workflow_run',
@@ -1314,7 +1319,8 @@ export const downloadJobLogsForWorkflowRun = createTool({
     job_id: z.number(),
   }),
   outputSchema: downloadJobLogsForWorkflowRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'download_job_logs_for_workflow_run',
@@ -1364,7 +1370,8 @@ export const listWorkflowRunArtifacts = createTool({
     run_id: z.number(),
   }),
   outputSchema: listWorkflowRunArtifactsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_workflow_run_artifacts',
@@ -1410,7 +1417,8 @@ export const downloadWorkflowRunArtifact = createTool({
     archive_format: z.enum(['zip', 'tar']).optional(),
   }),
   outputSchema: downloadWorkflowRunArtifactOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'download_workflow_run_artifact',

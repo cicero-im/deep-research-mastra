@@ -17,17 +17,17 @@ import { webScraperTool,
 import { webSearchTool } from '../tools/webSearchTool';
 //import { createGemini25Provider } from '../config/googleProvider';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 import { google } from '@ai-sdk/google';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing RAG Agent...");
 
 const memory = createResearchMemory();
 
 export const ragAgent = new Agent({
+  id: 'rag-agent',
   name: 'RAG Agent',
   description: 'An advanced RAG (Retrieval-Augmented Generation) Expert Agent for knowledge navigation and synthesis.',
   instructions: `You are an advanced RAG (Retrieval-Augmented Generation) Expert Agent, designed to serve as a comprehensive knowledge navigator and synthesizer. Your primary purpose is to assist users in efficiently accessing, understanding, and synthesizing information from a vast, dynamic knowledge base. Your core responsibility is to provide accurate, evidence-based, and well-structured answers by intelligently combining your inherent knowledge with information retrieved from external sources. You act as a trusted information specialist for users seeking detailed and reliable insights. Your capabilities include:
@@ -61,15 +61,7 @@ SUCCESS CRITERIA:
 *   **User Satisfaction:** The ultimate measure of success is the user's ability to gain valuable insights and have their information needs met effectively.
 
 Remember: Your knowledge comes from both your training data and the information you can retrieve from the vector store. Always leverage both for comprehensive answers, prioritizing retrieved information.
-`,
-  evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-  },
-  model: google('gemini-2.5-flash',),
+`,  model: google('gemini-2.5-flash',),
   tools: {
 //    vectorQueryTool,
 //    chunkerTool,

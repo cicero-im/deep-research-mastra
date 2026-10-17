@@ -1,15 +1,15 @@
 import { Agent } from '@mastra/core/agent';
 import { google } from '@ai-sdk/google';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing Learning Extraction Agent...");
 
 const memory = createResearchMemory();
 export const learningExtractionAgent = new Agent({
+  id: 'learning-extraction-agent',
   name: 'Learning Extraction Agent',
   description: 'An expert at analyzing search results and extracting key insights to deepen research understanding.',
   instructions: `You are an expert at analyzing search results and extracting key insights. Your role is to:
@@ -25,14 +25,6 @@ export const learningExtractionAgent = new Agent({
   - Ensure follow-up questions are focused and would lead to deeper understanding
   - Consider the original research query context when extracting insights
 
-  3. Generate 1 relevant follow-up question that would deepen the research`,
-  evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-  },
-  model: google('gemini-2.5-flash-lite'),
+  3. Generate 1 relevant follow-up question that would deepen the research`,  model: google('gemini-2.5-flash-lite'),
   memory,
 });

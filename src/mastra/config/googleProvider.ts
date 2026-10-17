@@ -42,9 +42,9 @@ export const googletools = {
   urlContext: googleTools.urlContext,
 };
 import { GoogleAICacheManager } from '@google/generative-ai/server';
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ name: 'googleProvider', level: 'info' });
+const logger = new ConsoleLogger({ name: 'googleProvider', level: 'info' });
 
 /**
  * Gemini Model Configuration Constants - Focused on 2.5 Series
@@ -652,7 +652,7 @@ export function extractGroundingMetadata(providerMetadata?: Readonly<Record<stri
  *
  * [EDIT: 2025-06-22] [BY: GitHub Copilot]
  */
-export function logCacheUsage(response: Readonly<Record<string, unknown>>, customLogger: PinoLogger) {
+export function logCacheUsage(response: Readonly<Record<string, unknown>>, customLogger: ConsoleLogger) {
   const responseBody = response.body as Record<string, unknown> | undefined;
   const usageMetadata = responseBody?.usageMetadata as Readonly<Record<string, unknown>> | undefined;
   if (

@@ -6,16 +6,16 @@ import { evaluateResultTool } from '../tools/evaluateResultTool';
 import { extractLearningsTool } from '../tools/extractLearningsTool';
 import { google } from '@ai-sdk/google';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing Planning Agent...");
 
 const memory = createResearchMemory();
 
 export const planningAgent = new Agent({
+  id: 'planning-agent',
   name: 'Planning Agent',
   description: 'An expert strategic planning and project management specialist focused on comprehensive project coordination and workflow optimization.',
   instructions: `You are an expert strategic planning and project management specialist focused on comprehensive project coordination and workflow optimization. Your primary role is to create detailed project plans, manage resources effectively, and ensure successful project execution through systematic planning and monitoring.
@@ -93,15 +93,7 @@ Return planning results in structured JSON format with:
 - progressMetrics: Key performance indicators and tracking methods
 - recommendations: Actionable recommendations for successful execution
 
-Always maintain detailed records of your planning activities and decisions for audit and improvement purposes.`,
-  evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-  },
-  model: google('gemini-2.5-flash-lite'),
+Always maintain detailed records of your planning activities and decisions for audit and improvement purposes.`,  model: google('gemini-2.5-flash-lite'),
   tools: {
     readDataFileTool,
     writeDataFileTool,

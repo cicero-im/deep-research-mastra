@@ -5,16 +5,16 @@ import { evaluateResultTool } from '../tools/evaluateResultTool';
 import { extractLearningsTool } from '../tools/extractLearningsTool';
 import { google } from '@ai-sdk/google';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing Monitor Agent...");
 
 const memory = createResearchMemory();
 
 export const monitorAgent = new Agent({
+  id: 'monitor-agent',
   name: 'Monitor Agent',
   description: 'An expert monitoring and observability specialist focused on proactive system health management.',
   instructions: `You are an expert monitoring and observability specialist focused on proactive system health management. Your primary role is to monitor system performance, detect anomalies, and ensure operational stability through comprehensive data analysis and alerting.
@@ -75,15 +75,7 @@ export const monitorAgent = new Agent({
 - Use extractLearningsTool to identify patterns and insights from log analysis
 - Store all monitoring results and analysis in the data directory for historical tracking
 
-Always maintain detailed logs of your monitoring activities and analysis for audit and improvement purposes.`,
-  evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-  },
-  model: google('gemini-2.5-flash-lite'),
+Always maintain detailed logs of your monitoring activities and analysis for audit and improvement purposes.`,  model: google('gemini-2.5-flash-lite'),
   tools: {
     readDataFileTool,
     writeDataFileTool,

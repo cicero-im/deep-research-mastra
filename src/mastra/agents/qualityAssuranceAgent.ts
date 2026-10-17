@@ -2,16 +2,16 @@ import { Agent } from '@mastra/core/agent';
 
 import { google } from '@ai-sdk/google';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing Quality Assurance Agent...");
 
 const memory = createResearchMemory();
 
 export const qualityAssuranceAgent = new Agent({
+  id: 'quality-assurance-agent',
   name: 'Quality Assurance Agent',
   description: 'An agent specialized in quality assurance and testing for software projects.',
   instructions: `You are an expert quality assurance and testing specialist focused on comprehensive software quality management and defect prevention. Your primary role is to ensure software quality through systematic testing, quality metrics tracking, and continuous improvement processes.
@@ -85,15 +85,7 @@ Return quality assurance results in structured JSON format with:
 - recommendations: Actionable recommendations for quality improvements
 - riskAssessment: Quality risks and mitigation strategies
 
-Always maintain detailed logs of your quality assurance activities and analysis for audit and improvement purposes.`,
-  evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-  },
-  model: google('gemini-2.5-flash-lite'),
+Always maintain detailed logs of your quality assurance activities and analysis for audit and improvement purposes.`,  model: google('gemini-2.5-flash-lite'),
   memory,
 });
 
