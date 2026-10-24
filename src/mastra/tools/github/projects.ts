@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 const listProjectCardsOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -32,7 +32,8 @@ export const listProjectCards = createTool({
     column_id: z.number(),
   }),
   outputSchema: listProjectCardsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_project_cards',
@@ -86,7 +87,8 @@ export const getProjectCard = createTool({
     card_id: z.number(),
   }),
   outputSchema: getProjectCardOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_project_card',
@@ -145,7 +147,8 @@ export const createProjectCard = createTool({
     content_type: z.string().optional(),
   }),
   outputSchema: createProjectCardOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_project_card',
@@ -219,7 +222,8 @@ export const updateProjectCard = createTool({
     archived: z.boolean().optional(),
   }),
   outputSchema: updateProjectCardOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_project_card',
@@ -268,7 +272,8 @@ export const deleteProjectCard = createTool({
     card_id: z.number(),
   }),
   outputSchema: deleteProjectCardOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'delete_project_card',
@@ -326,7 +331,8 @@ export const moveProjectCard = createTool({
     column_id: z.number().optional(),
   }),
   outputSchema: moveProjectCardOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'move_project_card',
@@ -380,7 +386,8 @@ export const listProjectColumns = createTool({
     project_id: z.number(),
   }),
   outputSchema: listProjectColumnsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_project_columns',
@@ -430,7 +437,8 @@ export const getProjectColumn = createTool({
     column_id: z.number(),
   }),
   outputSchema: getProjectColumnOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_project_column',
@@ -481,7 +489,8 @@ export const createProjectColumn = createTool({
     name: z.string(),
   }),
   outputSchema: createProjectColumnOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_project_column',
@@ -534,7 +543,8 @@ export const updateProjectColumn = createTool({
     name: z.string(),
   }),
   outputSchema: updateProjectColumnOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_project_column',
@@ -580,7 +590,8 @@ export const deleteProjectColumn = createTool({
   inputSchema: z.object({
     column_id: z.number(),
   }),
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'delete_project_column',
@@ -630,7 +641,8 @@ export const moveProjectColumn = createTool({
     position: z.string(),
   }),
   outputSchema: moveProjectColumnOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'move_project_column',
@@ -691,7 +703,8 @@ export const listProjects = createTool({
     state: z.enum(['open', 'closed']).optional(),
   }),
   outputSchema: listProjectsOutputSchema, // This line was already present in the full file content, but not in the diff.
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_projects',
@@ -760,7 +773,8 @@ export const getProject = createTool({
     project_id: z.number(),
   }),
   outputSchema: getProjectOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_project',
@@ -818,7 +832,8 @@ export const createProject = createTool({
     body: z.string().optional(),
   }),
   outputSchema: createProjectOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_project',
@@ -904,7 +919,8 @@ export const updateProject = createTool({
     private: z.boolean().optional(),
   }),
   outputSchema: updateProjectOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_project',
@@ -955,7 +971,8 @@ export const deleteProject = createTool({
     project_id: z.number(),
   }),
   outputSchema: deleteProjectOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'delete_project',

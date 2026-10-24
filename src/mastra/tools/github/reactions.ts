@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ name: 'GitHubReactions', level: 'info' });
+const logger = new ConsoleLogger({ name: 'GitHubReactions', level: 'info' });
 
 const SuccessSchema = z.object({
   success: z.literal(true),
@@ -55,7 +55,8 @@ export const listIssueReactions = createTool({
     issue_number: z.number(),
   }),
   outputSchema: ListIssueReactionsOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; issue_number: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing listIssueReactions for repo: ${context.repo}, issue: ${context.issue_number}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -106,7 +107,8 @@ export const createIssueReaction = createTool({
     content: reactionContentSchema,
   }),
   outputSchema: CreateIssueReactionOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; issue_number: number; content: "+1" | "-1" | "laugh" | "hooray" | "confused" | "heart" | "rocket" | "eyes" }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing createIssueReaction for repo: ${context.repo}, issue: ${context.issue_number}, content: ${context.content}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -158,7 +160,8 @@ export const deleteIssueReaction = createTool({
     reaction_id: z.number(),
   }),
   outputSchema: DeleteIssueReactionOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; issue_number: number; reaction_id: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing deleteIssueReaction for repo: ${context.repo}, issue: ${context.issue_number}, reaction: ${context.reaction_id}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -209,7 +212,8 @@ export const listCommitCommentReactions = createTool({
     comment_id: z.number(),
   }),
   outputSchema: ListCommitCommentReactionsOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing listCommitCommentReactions for repo: ${context.repo}, comment: ${context.comment_id}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -260,7 +264,8 @@ export const createCommitCommentReaction = createTool({
     content: reactionContentSchema,
   }),
   outputSchema: CreateCommitCommentReactionOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number; content: "+1" | "-1" | "laugh" | "hooray" | "confused" | "heart" | "rocket" | "eyes" }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing createCommitCommentReaction for repo: ${context.repo}, comment: ${context.comment_id}, content: ${context.content}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -312,7 +317,8 @@ export const deleteCommitCommentReaction = createTool({
     reaction_id: z.number(),
   }),
   outputSchema: DeleteCommitCommentReactionOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number; reaction_id: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing deleteCommitCommentReaction for repo: ${context.repo}, comment: ${context.comment_id}, reaction: ${context.reaction_id}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -363,7 +369,8 @@ export const listIssueCommentReactions = createTool({
     comment_id: z.number(),
   }),
   outputSchema: ListIssueCommentReactionsOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing listIssueCommentReactions for repo: ${context.repo}, comment: ${context.comment_id}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -414,7 +421,8 @@ export const createIssueCommentReaction = createTool({
     content: reactionContentSchema,
   }),
   outputSchema: CreateIssueCommentReactionOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number; content: "+1" | "-1" | "laugh" | "hooray" | "confused" | "heart" | "rocket" | "eyes" }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing createIssueCommentReaction for repo: ${context.repo}, comment: ${context.comment_id}, content: ${context.content}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -466,7 +474,8 @@ export const deleteIssueCommentReaction = createTool({
     reaction_id: z.number(),
   }),
   outputSchema: DeleteIssueCommentReactionOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number; reaction_id: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing deleteIssueCommentReaction for repo: ${context.repo}, comment: ${context.comment_id}, reaction: ${context.reaction_id}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -517,7 +526,8 @@ export const listPullRequestReviewCommentReactions = createTool({
     comment_id: z.number(),
   }),
   outputSchema: ListPullRequestReviewCommentReactionsOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing listPullRequestReviewCommentReactions for repo: ${context.repo}, comment: ${context.comment_id}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -568,7 +578,8 @@ export const createPullRequestReviewCommentReaction = createTool({
     content: reactionContentSchema,
   }),
   outputSchema: CreatePullRequestReviewCommentReactionOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number; content: "+1" | "-1" | "laugh" | "hooray" | "confused" | "heart" | "rocket" | "eyes" }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing createPullRequestReviewCommentReaction for repo: ${context.repo}, comment: ${context.comment_id}, content: ${context.content}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -620,7 +631,8 @@ export const deletePullRequestReviewCommentReaction = createTool({
     reaction_id: z.number(),
   }),
   outputSchema: DeletePullRequestReviewCommentReactionOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { owner: string; repo: string; comment_id: number; reaction_id: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing deletePullRequestReviewCommentReaction for repo: ${context.repo}, comment: ${context.comment_id}, reaction: ${context.reaction_id}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,

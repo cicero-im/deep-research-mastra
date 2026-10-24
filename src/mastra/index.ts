@@ -1,5 +1,10 @@
 import { Mastra } from '@mastra/core';
-import { LibSQLStore } from '@mastra/libsql';
+import { CloudflareDeployer } from '@mastra/deployer-cloudflare';
+import { ConsoleLogger } from '@mastra/core/logger';
+import { LangfuseExporter } from '@mastra/langfuse';
+import { SamplingStrategyType } from './config/tracing-shim';
+
+import { createLibSQLStore } from './config/libsql-storage';
 import { researchWorkflow } from './workflows/researchWorkflow';
 import { learningExtractionAgent } from './agents/learningExtractionAgent';
 import { evaluationAgent } from './agents/evaluationAgent';
@@ -8,7 +13,6 @@ import { researchAgent } from './agents/researchAgent';
 import { webSummarizationAgent } from './agents/webSummarizationAgent';
 import { generateReportWorkflow } from './workflows/generateReportWorkflow';
 import { comprehensiveResearchWorkflow } from './workflows/comprehensiveResearchWorkflow';
-import { complexResearchNetwork } from './networks/complexResearchNetwork';
 import { ragAgent } from './agents/ragAgent';
 import { githubAgent } from './agents/githubAgent';
 import { monitorAgent } from './agents/monitorAgent';
@@ -16,24 +20,24 @@ import { planningAgent } from './agents/planningAgent';
 import { qualityAssuranceAgent } from './agents/qualityAssuranceAgent';
 import { githubPlanningWorkflow } from './workflows/githubPlanningWorkflow';
 import { githubQualityWorkflow } from './workflows/githubQualityWorkflow';
-import { PinoLogger } from "@mastra/loggers";
-import { publisherAgent } from "./agents/publisherAgent";
-import { copywriterAgent } from "./agents/copywriterAgent";
-import { editorAgent } from "./agents/editorAgent";
+import { publisherAgent } from './agents/publisherAgent';
+import { copywriterAgent } from './agents/copywriterAgent';
+import { editorAgent } from './agents/editorAgent';
 import { assistant } from './agents/assistant';
-import { LangfuseExporter } from '@mastra/langfuse';
-import { SamplingStrategyType } from '@mastra/core/ai-tracing';
-import { voiceAgent } from './agents/v';
-//import { server } from './mcp/server';
-const logger = new PinoLogger({ level: 'info' });
 
-logger.info('Starting Mastra application')
+const logger = new ConsoleLogger({ level: 'info' });
+
+logger.info('Starting Mastra application');
 
 export const mastra = new Mastra({
-  storage: new LibSQLStore({
-    url: 'file:./mastra.db',
-    initialBackoffMs: 50
+  deployer: new CloudflareDeployer({
+    name: 'deep-research-mastra-api',
+    compatibility_date: '2025-05-01',
+    compatibility_flags: ['nodejs_compat'],
+    // Storage and vector indexes are reached via REST in libsql-storage.ts;
+    // pushing creds via wrangler `secret put` keeps process.env hydrated at runtime.
   }),
+  storage: createLibSQLStore(),
   agents: {
     researchAgent,
     reportAgent,
@@ -49,26 +53,24 @@ export const mastra = new Mastra({
     copywriterAgent,
     editorAgent,
     assistant,
-    voiceAgent,
   },
-  workflows: { generateReportWorkflow, researchWorkflow, comprehensiveResearchWorkflow, githubPlanningWorkflow, githubQualityWorkflow },
-  vnext_networks: {
-    complexResearchNetwork,
+  workflows: {
+    generateReportWorkflow,
+    researchWorkflow,
+    comprehensiveResearchWorkflow,
+    githubPlanningWorkflow,
+    githubQualityWorkflow,
   },
   observability: {
-    configs: {
-      langfuse: {
-        serviceName: process.env.SERVICE_NAME ?? 'mastra',
-        sampling: { type: SamplingStrategyType.ALWAYS },
-        exporters: [
-          new LangfuseExporter({
-            publicKey: process.env.LANGFUSE_PUBLIC_KEY,
-            secretKey: process.env.LANGFUSE_SECRET_KEY,
-            baseUrl: process.env.LANGFUSE_BASE_URL, // Optional
-            realtime: process.env.NODE_ENV === 'development',
-          }),
-        ],
-      },
-    },
+    serviceName: process.env.SERVICE_NAME ?? 'mastra',
+    sampling: { type: SamplingStrategyType.ALWAYS },
+    exporters: [
+      new LangfuseExporter({
+        publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+        secretKey: process.env.LANGFUSE_SECRET_KEY,
+        baseUrl: process.env.LANGFUSE_BASE_URL,
+        realtime: process.env.NODE_ENV === 'development',
+      }),
+    ],
   },
 });

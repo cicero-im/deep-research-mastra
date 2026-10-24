@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from '@mastra/loggers';
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from '@mastra/core/logger';
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ name: 'GitHubSearch', level: 'info' });
+const logger = new ConsoleLogger({ name: 'GitHubSearch', level: 'info' });
 
 const searchCodeOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -29,7 +29,8 @@ export const searchCode = createTool({
     q: z.string(),
   }),
   outputSchema: searchCodeOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Searching code with query: ${context.q}`);
 
     const searchSpan = tracingContext?.currentSpan?.createChildSpan({
@@ -75,7 +76,8 @@ export const searchIssuesAndPullRequests = createTool({
     q: z.string(),
   }),
   outputSchema: searchIssuesAndPullRequestsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Searching issues and pull requests with query: ${context.q}`);
 
     const searchSpan = tracingContext?.currentSpan?.createChildSpan({
@@ -120,7 +122,8 @@ export const searchRepositories = createTool({
     q: z.string(),
   }),
   outputSchema: searchRepositoriesOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Searching repositories with query: ${context.q}`);
 
     const searchSpan = tracingContext?.currentSpan?.createChildSpan({
@@ -165,7 +168,8 @@ export const searchUsers = createTool({
     q: z.string(),
   }),
   outputSchema: searchUsersOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Searching users with query: ${context.q}`);
 
     const searchSpan = tracingContext?.currentSpan?.createChildSpan({

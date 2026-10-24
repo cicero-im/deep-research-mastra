@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ name: 'GitHubUsers', level: 'info' });
+const logger = new ConsoleLogger({ name: 'GitHubUsers', level: 'info' });
 
 const FullUserSchema = z.object({
   id: z.number(),
@@ -49,7 +49,8 @@ export const getAuthenticatedUser = createTool({
     action: z.enum(["get"]).describe("Action to get authenticated user"),
   }),
   outputSchema: GetAuthenticatedUserOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { action: "get" }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_authenticated_user',
@@ -93,7 +94,8 @@ export const getUser = createTool({
     username: z.string(),
   }),
   outputSchema: GetUserOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { username: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_user',
@@ -138,7 +140,8 @@ export const listUsers = createTool({
     page: z.number().optional(),
   }),
   outputSchema: ListUsersOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { since?: number; per_page?: number; page?: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_users',

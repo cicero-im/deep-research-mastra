@@ -4,7 +4,10 @@ import { logger } from 'hono/logger'
 
 interface Bindings {
   ASSETS: Fetcher
-  MASTRA_BASE_URL?: string
+  // Service binding to the Mastra Worker (deep-research-mastra-api).
+  // Optional so local `vite preview` without a binding still boots — at
+  // runtime the proxy returns 503 if the binding is missing.
+  MASTRA?: Fetcher
 }
 
 const api = new Hono<{ Bindings: Bindings }>()
@@ -32,43 +35,32 @@ const sanitizeHeaders = (incoming: Headers): Headers => {
   const out = new Headers()
   incoming.forEach((value, key) => {
     const lower = key.toLowerCase()
-    if (STRIPPED_HEADERS.has(lower)) {
-      return
-    }
-    if (lower.startsWith('cf-')) {
-      return
-    }
+    if (STRIPPED_HEADERS.has(lower)) return
+    if (lower.startsWith('cf-')) return
     out.set(key, value)
   })
   return out
-}
-
-const buildUpstreamUrl = (base: string, requestUrl: string, prefixToStrip: string): URL => {
-  const upstream = new URL(base)
-  const reqUrl = new URL(requestUrl)
-  const rawSuffix = reqUrl.pathname.slice(prefixToStrip.length)
-  const normalizedSuffix = '/' + rawSuffix.replace(/^\/+/, '')
-  const basePath = upstream.pathname.replace(/\/+$/, '')
-  upstream.pathname = basePath + normalizedSuffix
-  upstream.search = reqUrl.search
-  upstream.hash = ''
-  return upstream
 }
 
 const proxyToMastra = async (
   c: { env: Bindings; req: { method: string; url: string; raw: Request } },
   prefixToStrip: string,
 ): Promise<Response> => {
-  const base = c.env.MASTRA_BASE_URL
-  if (base === undefined || base === '') {
+  const mastra = c.env.MASTRA
+  if (!mastra) {
     return new Response(
       JSON.stringify({
-        error: 'MASTRA_BASE_URL not configured. Set it as a Worker var to proxy to a Mastra service.',
+        error: 'MASTRA service binding not configured.',
       }),
       { status: 503, headers: { 'content-type': 'application/json' } },
     )
   }
-  const upstream = buildUpstreamUrl(base, c.req.url, prefixToStrip)
+  const reqUrl = new URL(c.req.url)
+  const suffix = reqUrl.pathname.slice(prefixToStrip.length)
+  const upstreamPath = '/api' + (suffix.startsWith('/') ? suffix : '/' + suffix)
+  // Service bindings ignore the host portion; we use a placeholder origin.
+  const upstreamUrl = new URL(upstreamPath + reqUrl.search, 'https://mastra.internal')
+
   const init: RequestInit = {
     method: c.req.method,
     headers: sanitizeHeaders(c.req.raw.headers),
@@ -76,8 +68,9 @@ const proxyToMastra = async (
   if (!['GET', 'HEAD'].includes(c.req.method)) {
     init.body = await c.req.raw.arrayBuffer()
   }
+
   try {
-    return await fetch(upstream.toString(), init)
+    return await mastra.fetch(upstreamUrl.toString(), init)
   } catch {
     return new Response(
       JSON.stringify({ error: 'Upstream Mastra service unreachable' }),

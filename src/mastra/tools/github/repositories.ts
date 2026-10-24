@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 const listRepositoriesOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -17,7 +17,8 @@ export const listRepositories = createTool({
   description: 'Lists the repositories for the authenticated user.',
   inputSchema: z.object({}),
   outputSchema: listRepositoriesOutputSchema,
-  execute: async ({ tracingContext }) => {
+  execute: async (_input: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_repositories',
@@ -62,7 +63,8 @@ export const createRepository = createTool({
     private: z.boolean().optional(),
   }),
   outputSchema: createRepositoryOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_repository',
@@ -106,7 +108,8 @@ export const getRepository = createTool({
     repo: z.string(),
   }),
   outputSchema: getRepositoryOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_repository',
@@ -153,7 +156,8 @@ export const updateRepository = createTool({
     private: z.boolean().optional(),
   }),
   outputSchema: updateRepositoryOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_repository',
@@ -197,7 +201,8 @@ export const deleteRepository = createTool({
     repo: z.string(),
   }),
   outputSchema: deleteRepositoryOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'delete_repository',
@@ -245,7 +250,8 @@ export const listBranches = createTool({
     repo: z.string(),
   }),
   outputSchema: listBranchesOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_branches',
@@ -294,7 +300,8 @@ export const getBranch = createTool({
     branch: z.string(),
   }),
   outputSchema: getBranchOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_branch',
@@ -340,7 +347,8 @@ export const createBranch = createTool({
     sha: z.string(),
   }),
   outputSchema: createBranchOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_branch',
@@ -390,7 +398,8 @@ export const deleteBranch = createTool({
     branch: z.string(),
   }),
   outputSchema: deleteBranchOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'delete_branch',

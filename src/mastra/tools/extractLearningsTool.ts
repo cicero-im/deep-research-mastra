@@ -1,9 +1,9 @@
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../config/tracing-shim';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 export const extractLearningsTool = createTool({
   id: 'extract-learnings',
@@ -18,7 +18,9 @@ export const extractLearningsTool = createTool({
       })
       .describe('The search result to process'),
   }),
-  execute: async ({ context, mastra, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const mastra = (__ctx as any)?.mastra;
+  const tracingContext = (__ctx as any)?.tracingContext;
     const extractSpan = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'extract_learnings',

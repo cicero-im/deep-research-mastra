@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 const getOrganizationOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -25,7 +25,8 @@ export const getOrganization = createTool({
     org: z.string(),
   }),
   outputSchema: getOrganizationOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_organization',
@@ -73,7 +74,8 @@ export const listOrganizations = createTool({
     since: z.number().optional(),
   }),
   outputSchema: listOrganizationsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_organizations',
@@ -121,7 +123,8 @@ export const listOrganizationMembers = createTool({
     org: z.string(),
   }),
   outputSchema: listOrganizationMembersOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_organization_members',

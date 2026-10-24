@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from '@mastra/loggers';
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from '@mastra/core/logger';
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ name: 'GitHubPullRequests', level: 'info' });
+const logger = new ConsoleLogger({ name: 'GitHubPullRequests', level: 'info' });
 
 const listPullRequestsOutputSchema = z.object({
   status: z.enum(['success', 'error']),
@@ -27,7 +27,8 @@ export const listPullRequests = createTool({
     state: z.enum(['open', 'closed', 'all']).optional(),
   }),
   outputSchema: listPullRequestsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_pull_requests',
@@ -78,7 +79,8 @@ export const getPullRequest = createTool({
     pull_number: z.number(),
   }),
   outputSchema: getPullRequestOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_pull_request',
@@ -133,7 +135,8 @@ export const createPullRequest = createTool({
     draft: z.boolean().optional(),
   }),
   outputSchema: createPullRequestOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_pull_request',
@@ -187,7 +190,8 @@ export const updatePullRequest = createTool({
     state: z.enum(['open', 'closed']).optional(),
   }),
   outputSchema: updatePullRequestOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_pull_request',
@@ -239,7 +243,8 @@ export const mergePullRequest = createTool({
     merge_method: z.enum(['merge', 'squash', 'rebase']).optional(),
   }),
   outputSchema: mergePullRequestOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'merge_pull_request',
@@ -289,7 +294,8 @@ export const listPullRequestComments = createTool({
     issue_number: z.number(),
   }),
   outputSchema: listPullRequestCommentsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_pull_request_comments',
@@ -340,7 +346,8 @@ export const createPullRequestComment = createTool({
     body: z.string(),
   }),
   outputSchema: createPullRequestCommentOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_pull_request_comment',
@@ -391,7 +398,8 @@ export const updatePullRequestComment = createTool({
     body: z.string(),
   }),
   outputSchema: updatePullRequestCommentOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_pull_request_comment',
@@ -436,7 +444,8 @@ export const deletePullRequestComment = createTool({
     comment_id: z.number(),
   }),
   outputSchema: deletePullRequestCommentOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'delete_pull_request_comment',
@@ -486,7 +495,8 @@ export const listPullRequestReviews = createTool({
     pull_number: z.number(),
   }),
   outputSchema: listPullRequestReviewsOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_pull_request_reviews',
@@ -543,7 +553,8 @@ export const createPullRequestReview = createTool({
     })).optional()
   }),
   outputSchema: createPullRequestReviewOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_pull_request_review',

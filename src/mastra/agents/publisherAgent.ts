@@ -4,7 +4,7 @@ import { copywriterTool } from "../tools/copywriter-agent-tool";
 import { editorTool } from "../tools/editor-agent-tool";
 //import { createGemini25Provider } from '../config/googleProvider';
 import { createResearchMemory } from '../config/libsql-storage';
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 import { webSearchTool } from "../tools/webSearchTool";
 import { evaluateResultTool } from "../tools/evaluateResultTool";
 import { extractLearningsTool } from "../tools/extractLearningsTool";
@@ -17,12 +17,13 @@ import { webScraperTool,
 } from "../tools/web-scraper-tool";
 import { google } from '@ai-sdk/google';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info('Initializing Publisher Agent...');
 
 const memory = createResearchMemory();
 export const publisherAgent = new Agent({
+  id: 'publisheragent',
   name: "publisherAgent",
   description: "An agent that publishes blog posts by writing and editing content.",
   instructions:

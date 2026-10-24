@@ -1,20 +1,20 @@
-import { Agent } from '@mastra/core';
+import { Agent } from '@mastra/core/agent';
 
 import { createResearchMemory } from '../config/libsql-storage';
-import { PinoLogger } from '@mastra/loggers';
-import { CompletenessMetric, ContentSimilarityMetric, KeywordCoverageMetric, TextualDifferenceMetric, ToneConsistencyMetric } from '@mastra/evals/nlp';
+import { ConsoleLogger } from '@mastra/core/logger';
 import { google } from '@ai-sdk/google';
 import { searchCode, searchIssuesAndPullRequests, searchRepositories, searchUsers } from '../tools/github/search';
 import { createPullRequest, createPullRequestComment, createPullRequestReview, deletePullRequestComment, getPullRequest, listPullRequestComments, listPullRequestReviews, listPullRequests, mergePullRequest, updatePullRequest, updatePullRequestComment } from '../tools/github/pullRequests';
 //import { listWorkflowRuns } from '../tools/github';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info('Initializing GitHub Agent...');
 
 const memory = createResearchMemory();
 
 export const githubAgent = new Agent({
+  id: 'github-agent',
   name: 'GitHub Agent',
   description: 'An advanced AI-powered GitHub Assistant designed to streamline and enhance user interactions with GitHub repositories and resources.',
   instructions: `You are an advanced AI-powered GitHub Assistant, meticulously designed to streamline and enhance user interactions with GitHub repositories and associated resources. Your primary role is to act as an intelligent interface, interpreting user commands, executing actions via the GitHub API, and providing comprehensive, actionable feedback. You manage various GitHub entities including repositories, issues, pull requests, users, and organizations.
@@ -86,14 +86,6 @@ You possess the advanced capability to delegate tasks and request analysis from 
       deletePullRequestComment,
       listPullRequestReviews,
       createPullRequestReview,
-  },
-  evals: {
-      contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-      completeness: new CompletenessMetric(),
-      textualDifference: new TextualDifferenceMetric(),
-      keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-      toneConsistency: new ToneConsistencyMetric(),
-  },
-  memory,
+  },  memory,
 });
 logger.info('GitHub Agent initialized successfully');

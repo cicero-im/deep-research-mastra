@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest';
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 export const octokit = new Octokit({ auth: process.env.GITHUB_API_KEY });
 export async function getRepositoryInfo(owner: string, repo: string) {

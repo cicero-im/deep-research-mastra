@@ -1,14 +1,22 @@
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import Exa from 'exa-js';
-import 'dotenv/config';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../config/tracing-shim';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
-// Initialize Exa client
-const exa = new Exa(process.env.EXA_API_KEY);
+// Lazily build Exa client so Cloudflare's preflight (which boots the Worker
+// without secrets) doesn't crash on a missing EXA_API_KEY env var. The check
+// inside execute() reports a clear error to the caller instead.
+let _exa: Exa | undefined;
+const getExa = (): Exa | undefined => {
+  if (_exa) return _exa;
+  const key = process.env.EXA_API_KEY;
+  if (!key) return undefined;
+  _exa = new Exa(key);
+  return _exa;
+};
 
 export const webSearchTool = createTool({
   id: 'web-search',
@@ -16,7 +24,9 @@ export const webSearchTool = createTool({
   inputSchema: z.object({
     query: z.string().describe('The search query to run'),
   }),
-  execute: async ({ context, mastra, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const mastra = (__ctx as any)?.mastra;
+  const tracingContext = (__ctx as any)?.tracingContext;
     const searchSpan = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'web_search',
@@ -27,7 +37,8 @@ export const webSearchTool = createTool({
     const { query } = context;
 
     try {
-      if (!process.env.EXA_API_KEY) {
+      const exa = getExa();
+      if (!exa) {
         logger.error('Error: EXA_API_KEY not found in environment variables');
         searchSpan?.end({ metadata: { error: 'Missing API key' } });
         return { results: [], error: 'Missing API key' };

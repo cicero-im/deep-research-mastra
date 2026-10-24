@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from '@mastra/loggers';
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from '@mastra/core/logger';
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ name: 'GitHubChecks', level: 'info' });
+const logger = new ConsoleLogger({ name: 'GitHubChecks', level: 'info' });
 
 logger.info(`Creating check run`);
 
@@ -37,7 +37,8 @@ export const createCheckRun = createTool({
     }).optional(),
   }),
   outputSchema: createCheckRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       // Log the creation of the check run
       type: AISpanType.GENERIC,
@@ -93,7 +94,8 @@ export const getCheckRun = createTool({
     check_run_id: z.number(),
   }),
   outputSchema: getCheckRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_check_run',
@@ -150,7 +152,8 @@ export const updateCheckRun = createTool({
     }).optional(),
   }),
   outputSchema: updateCheckRunOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'update_check_run',
@@ -206,7 +209,8 @@ export const listCheckRunsForRef = createTool({
     ref: z.string(),
   }),
   outputSchema: listCheckRunsForRefOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_check_runs_for_ref',
@@ -255,7 +259,8 @@ export const listCheckSuitesForRef = createTool({
     ref: z.string(),
   }),
   outputSchema: listCheckSuitesForRefOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_check_suites_for_ref',
@@ -302,7 +307,8 @@ export const getCheckSuite = createTool({
     check_suite_id: z.number(),
   }),
   outputSchema: getCheckSuiteOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_check_suite',
@@ -349,7 +355,8 @@ export const createCheckSuite = createTool({
     head_sha: z.string(),
   }),
   outputSchema: createCheckSuiteOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'create_check_suite',

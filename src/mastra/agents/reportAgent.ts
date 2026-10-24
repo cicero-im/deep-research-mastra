@@ -1,17 +1,16 @@
 import { Agent } from '@mastra/core/agent';
 //import { createGemini25Provider } from '../config/googleProvider';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp";
-
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 import { google } from '@ai-sdk/google';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing Report Agent...");
 
 const memory = createResearchMemory();
 export const reportAgent = new Agent({
+  id: 'report-agent',
   name: 'Report Agent',
   description: 'An expert researcher agent that generates comprehensive reports based on research data.',
   instructions: `You are an expert researcher. Today is ${new Date().toISOString()}. Follow these instructions when responding:
@@ -35,14 +34,6 @@ export const reportAgent = new Agent({
   - Follow-up questions identified
 
   Structure your reports with clear sections, headings, and focus on synthesizing the information
-  into a cohesive narrative rather than simply listing facts.`,
-  evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-  },
-  model: google('gemini-2.5-flash'),
+  into a cohesive narrative rather than simply listing facts.`,  model: google('gemini-2.5-flash'),
   memory,
 });

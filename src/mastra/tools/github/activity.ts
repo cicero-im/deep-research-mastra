@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 const EventActorSchema = z.object({
   id: z.number(),
@@ -111,31 +111,6 @@ const deleteRepoSubscriptionOutputSchema = z.object({
   errorMessage: z.string().optional().describe('Details on subscription deletion failure')
 }).strict();
 
-const EventActorSchema = z.object({
-  id: z.number(),
-  login: z.string(),
-  display_login: z.string(),
-  gravatar_id: z.string(),
-  url: z.string().url(),
-  avatar_url: z.string().url()
-});
-
-const EventRepoSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  url: z.string().url()
-});
-
-const EventSchema = z.object({
-  id: z.string(),
-  type: z.string(),
-  actor: EventActorSchema,
-  repo: EventRepoSchema,
-  payload: z.object({}).strict(),
-  public: z.boolean(),
-  created_at: z.string().datetime()
-});
-
 export const listRepoEvents = createTool({
   id: 'listRepoEvents',
   description: 'Lists events for a repository.',
@@ -148,7 +123,8 @@ export const listRepoEvents = createTool({
     data: z.array(EventSchema).optional(),
     errorMessage: z.string().optional()
   }).strict(),
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_repo_events',
@@ -191,7 +167,8 @@ export const listPublicEvents = createTool({
     data: z.array(EventSchema).optional(),
     errorMessage: z.string().optional()
   }).strict(),
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_public_events',
@@ -222,30 +199,6 @@ export const listPublicEvents = createTool({
 });
 
 
-const NotificationSchema = z.object({
-  id: z.string(),
-  thread_id: z.number(),
-  repository: z.object({
-    id: z.number(),
-    node_id: z.string(),
-    name: z.string(),
-    full_name: z.string(),
-    private: z.boolean()
-  }),
-  reason: z.enum(['subscribed', 'mention', 'review_requested', 'ci_activity', 'review_request_removed', 'review_dismissed', 'review_re_request', 'repo', 'assigned', 'comment', 'team_mention', 'security_and_maintenance']),
-  subject: z.object({
-    title: z.string(),
-    url: z.string().url(),
-    type: z.enum(['Issue', 'PullRequest', 'Release', 'RepositoryAdvisory', 'RepositoryVulnerabilityAlert', 'Discussion']),
-    latest_comment_url: z.string().url().optional()
-  }),
-  url: z.string().url(),
-  updated_at: z.string().datetime(),
-  last_read_at: z.string().datetime().optional(),
-  unsubscribe_url: z.string().url(),
-  subscription_url: z.string().url()
-});
-
 export const listRepoNotifications = createTool({
   id: 'listRepoNotifications',
   description: 'Lists notifications for a repository.',
@@ -262,7 +215,8 @@ export const listRepoNotifications = createTool({
     data: z.array(NotificationSchema).optional(),
     errorMessage: z.string().optional()
   }).strict(),
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'list_repo_notifications',
@@ -308,7 +262,8 @@ export const markRepoNotificationsAsRead = createTool({
     last_read_at: z.string().optional(),
   }),
   outputSchema: markRepoNotificationsAsReadOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'mark_repo_notifications_as_read',
@@ -347,7 +302,8 @@ export const getRepoSubscription = createTool({
     repo: z.string(),
   }),
   outputSchema: getRepoSubscriptionOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'get_repo_subscription',
@@ -389,7 +345,8 @@ export const setRepoSubscription = createTool({
     ignored: z.boolean().optional(),
   }),
   outputSchema: setRepoSubscriptionOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'set_repo_subscription',
@@ -434,7 +391,8 @@ export const deleteRepoSubscription = createTool({
     repo: z.string(),
   }),
   outputSchema: deleteRepoSubscriptionOutputSchema,
-  execute: async ({ context, tracingContext }) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     const spanName = tracingContext?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
       name: 'delete_repo_subscription',

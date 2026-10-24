@@ -6,9 +6,9 @@ import { reportAgent } from '../agents/reportAgent';
 import { evaluationAgent } from '../agents/evaluationAgent';
 import { learningExtractionAgent } from '../agents/learningExtractionAgent';
 import { webSummarizationAgent } from '../agents/webSummarizationAgent';
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 // --- Step 1: Get User Query ---
 const getUserQueryStep = createStep({

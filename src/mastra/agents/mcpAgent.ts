@@ -1,42 +1,7 @@
-import { Agent } from "@mastra/core/agent";
-import { MCPServer } from "@mastra/mcp";
-import { MCPClient } from "@mastra/mcp";
-import { google } from '@ai-sdk/google';
-import { createResearchMemory } from '../config/libsql-storage';
-import { PinoLogger } from "@mastra/loggers";
-
-const logger = new PinoLogger({ level: 'info' });
-
-logger.info('Initializing MCP Agent...');
-
-const memory = createResearchMemory();
-
-const myAgent = new Agent({
-  name: "My Agent",
-  description: "An agent that can use tools from an http MCP server",
-  instructions: "You can use remote calculation tools.",
-  model: google("gemini-2.5-flash"),
-  memory,
-  tools: async () => {
-    // Tools resolve when needed, not during initialization
-    const mcpClient = new MCPClient({
-      servers: {
-        myServer: {
-          url: new URL("http://localhost:4111/api/mcp/mcpServer/mcp"),
-        },
-      },
-    });
-    return await mcpClient.getTools();
-  },
-});
-
-// This works because tools resolve after server startup
-export const mcpServer = new MCPServer({
-  name: "My MCP Server",
-  agents: {
-    myAgent
-  },
-  tools: myAgent.tools,
-  version: '1.0.0',
-});
-
+// MCP integration was rebuilt in Mastra v1: MCPClient.getTools() and
+// Agent.tools (as a property) were removed. The original implementation pulled
+// tools at agent-construction time over HTTP to a sibling MCP server, which
+// also doesn't fit the Cloudflare Workers runtime cleanly. We keep this file
+// as an inert export so other files importing from it (none today) still
+// resolve, but the agent isn't registered with Mastra anymore.
+export const mcpServer = null;

@@ -13,8 +13,11 @@
   "observability": {
     "enabled": true
   },
-  "vars": {
-    // Set MASTRA_BASE_URL to proxy /api/mastra/* through to a Mastra service.
-    // "MASTRA_BASE_URL": "https://your-mastra-service.example.com"
-  }
+  "vars": {},
+  "services": [
+    {
+      "binding": "MASTRA",
+      "service": "deep-research-mastra-api"
+    }
+  ]
 }

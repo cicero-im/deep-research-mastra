@@ -1,10 +1,10 @@
-import { createTool } from '@mastra/core';
+import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { octokit } from './octokit';
-import { PinoLogger } from "@mastra/loggers";
-import { AISpanType } from '@mastra/core/ai-tracing';
+import { ConsoleLogger } from "@mastra/core/logger";
+import { AISpanType } from '../../config/tracing-shim';
 
-const logger = new PinoLogger({ name: 'GitHubTeams', level: 'info' });
+const logger = new ConsoleLogger({ name: 'GitHubTeams', level: 'info' });
 
 const SuccessSchema = z.object({
   success: z.literal(true),
@@ -180,7 +180,8 @@ export const getTeam = createTool({
     team_slug: z.string(),
   }),
   outputSchema: GetTeamOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing getTeam for org: ${context.org}, team: ${context.team_slug}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -227,7 +228,8 @@ export const listTeams = createTool({
     org: z.string(),
   }),
   outputSchema: ListTeamsOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing listTeams for org: ${context.org}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
@@ -275,7 +277,8 @@ export const createTeam = createTool({
     parent_team_id: z.number().optional(),
   }),
   outputSchema: CreateTeamOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; name: string; description?: string; privacy?: "secret" | "closed"; parent_team_id?: number }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing createTeam for org: ${context.org}, name: ${context.name}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
@@ -329,7 +332,8 @@ export const updateTeam = createTool({
     privacy: z.enum(['secret', 'closed']).optional(),
   }),
   outputSchema: UpdateTeamOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string; name?: string; description?: string; privacy?: "secret" | "closed" }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing updateTeam for org: ${context.org}, team: ${context.team_slug}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -380,7 +384,8 @@ export const deleteTeam = createTool({
     team_slug: z.string(),
   }),
   outputSchema: DeleteTeamOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing deleteTeam for org: ${context.org}, team: ${context.team_slug}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan?.({
       type: AISpanType.GENERIC,
@@ -428,7 +433,8 @@ export const listTeamMembers = createTool({
     team_slug: z.string(),
   }),
   outputSchema: ListTeamMembersOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing listTeamMembers for org: ${context.org}, team: ${context.team_slug}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
@@ -477,7 +483,8 @@ export const addTeamMember = createTool({
     username: z.string(),
   }),
   outputSchema: AddTeamMemberOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string; username: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing addTeamMember for org: ${context.org}, team: ${context.team_slug}, user: ${context.username}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
@@ -527,7 +534,8 @@ export const removeTeamMember = createTool({
     username: z.string(),
   }),
   outputSchema: RemoveTeamMemberOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string; username: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing removeTeamMember for org: ${context.org}, team: ${context.team_slug}, user: ${context.username}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
@@ -576,7 +584,8 @@ export const listTeamRepos = createTool({
     team_slug: z.string(),
   }),
   outputSchema: ListTeamReposOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing listTeamRepos for org: ${context.org}, team: ${context.team_slug}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
@@ -627,7 +636,8 @@ export const addTeamRepo = createTool({
     permission: z.enum(['pull', 'push', 'admin']).optional(),
   }),
   outputSchema: AddTeamRepoOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string; owner: string; repo: string; permission?: "pull" | "push" | "admin" }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing addTeamRepo for org: ${context.org}, team: ${context.team_slug}, repo: ${context.owner}/${context.repo}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,
@@ -680,7 +690,8 @@ export const removeTeamRepo = createTool({
     repo: z.string(),
   }),
   outputSchema: RemoveTeamRepoOutputSchema,
-  execute: async ({ context, tracingContext }: Readonly<{ context: { org: string; team_slug: string; owner: string; repo: string }; tracingContext?: unknown }>) => {
+  execute: async (context: any, __ctx?: any) => {
+  const tracingContext = (__ctx as any)?.tracingContext;
     logger.info(`Executing removeTeamRepo for org: ${context.org}, team: ${context.team_slug}, repo: ${context.owner}/${context.repo}`);
     const spanName = (tracingContext as any)?.currentSpan?.createChildSpan({
       type: AISpanType.GENERIC,

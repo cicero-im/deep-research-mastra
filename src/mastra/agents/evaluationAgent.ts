@@ -1,16 +1,16 @@
 import { Agent } from '@mastra/core/agent';
 import { createResearchMemory } from '../config/libsql-storage';
-import { ContentSimilarityMetric, CompletenessMetric, TextualDifferenceMetric, KeywordCoverageMetric, ToneConsistencyMetric } from "@mastra/evals/nlp"; // Non-LLM evals
-import { PinoLogger } from "@mastra/loggers";
+import { ConsoleLogger } from "@mastra/core/logger";
 import { google } from '@ai-sdk/google';
 
-const logger = new PinoLogger({ level: 'info' });
+const logger = new ConsoleLogger({ level: 'info' });
 
 logger.info("Initializing Evaluation Agent...");
 
 const memory = createResearchMemory();
 
 export const evaluationAgent = new Agent({
+  id: 'evaluation-agent',
   name: 'Evaluation Agent',
   description: 'An expert evaluation agent. Your task is to evaluate whether search results are relevant to a research query.',
   instructions: `You are an expert evaluation agent. Your task is to evaluate whether search results are relevant to a research query.
@@ -36,12 +36,4 @@ export const evaluationAgent = new Agent({
   - reason: brief explanation of your decision
   `,
   model: google('gemini-2.5-flash-lite'),
-  memory,
-  evals: {
-    contentSimilarity: new ContentSimilarityMetric({ ignoreCase: true, ignoreWhitespace: true }),
-    completeness: new CompletenessMetric(),
-    textualDifference: new TextualDifferenceMetric(),
-    keywordCoverage: new KeywordCoverageMetric(), // Keywords will be provided at runtime for evaluation
-    toneConsistency: new ToneConsistencyMetric(),
-  },
-});
+  memory,});
